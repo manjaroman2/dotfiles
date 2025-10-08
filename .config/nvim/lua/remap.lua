@@ -2,7 +2,8 @@
 local telescope_builtin = require('telescope.builtin')
 vim.keymap.set("n", "<leader>f", telescope_builtin.find_files, {})
 vim.keymap.set("n", "<leader>g", telescope_builtin.live_grep, {})
-vim.keymap.set("n", "<leader>b", telescope_builtin.buffers, {})
+vim.keymap.set("n", "<leader>bb", telescope_builtin.buffers, {})
+vim.keymap.set("n", "<leader>t", telescope_builtin.planets, {})
 
 -- move lines
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -26,10 +27,20 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- make
-vim.keymap.set("n", "<leader>mm", ":make<CR>:copen<CR>")
 
--- set make run options
+-- close buffer
+vim.keymap.set("n", "<leader>bd", ":bd<CR>")
+
+-- toggle quickfix list
+vim.keymap.set("n", "<leader>q", ":cwindow<CR>")
+
+-- make
+vim.keymap.set("n", "<leader>mm",
+  ":make<CR>:if len(getqflist()) > 0 | copen | endif<CR>",
+  { silent = true }
+)
+
+-- zig: set make run options
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "zig",
   callback = function(args)
@@ -48,33 +59,106 @@ vim.api.nvim_create_autocmd("FileType", {
     )
   end,
 })
+-- c: default options if no Makefile is present
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "c",
+    callback = function()
+        vim.opt.makeprg = "gcc % -o %<"
+        vim.opt.errorformat = "%f:%l:%c: %m"
+    end,
+})
 
 -- make run
 vim.keymap.set("n", "<leader>mr", function()
-  local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_open_win(buf, true, {
-    relative = "editor",
-    width = 100,
-    height = 20,
-    row = 5,
-    col = 12,
-    style = "minimal",
-  })
-  local cmd = { "zig", "build", "--summary", "all", "run" }
-  if vim.g.zig_make_args and vim.g.zig_make_args ~= "" then
-    table.insert(cmd, "--")
-    for arg in vim.g.zig_make_args:gmatch("%S+") do
-      table.insert(cmd, arg)
+  local ft = vim.bo.filetype
+  if ft == "zig" then
+    local buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_open_win(buf, true, {
+      relative = "editor",
+      width = 100,
+      height = 20,
+      row = 5,
+      col = 12,
+      style = "minimal",
+    })
+    local cmd = { "zig", "build", "--summary", "all", "run" }
+    if vim.g.zig_make_args and vim.g.zig_make_args ~= "" then
+      table.insert(cmd, "--")
+      for arg in vim.g.zig_make_args:gmatch("%S+") do
+        table.insert(cmd, arg)
+      end
     end
+    vim.fn.termopen(cmd, {
+      on_exit = function(_, code, _)
+        print("Process exited with code: " .. code)
+        -- vim.api.nvim_win_close(win, true)
+      end,
+    })
+    vim.api.nvim_set_current_buf(buf)
+    vim.cmd("startinsert")
+  elseif ft == "typst" then
+    vim.cmd("make")
+    local filename = vim.fn.expand("%:t:r") .. ".pdf"
+    local filepath = "./" .. filename
+    vim.defer_fn(function()
+      vim.fn.jobstart({ "xdg-open", filepath }, {
+        detach = true
+      })
+    end, 1000)
+    return
+  elseif ft == "python" then
+    vim.cmd("write")
+    local filepath = vim.fn.expand('%:p')
+    local buf = vim.api.nvim_create_buf(false, true)
+    local win = vim.api.nvim_open_win(buf, true, {
+      relative = "editor",
+      width = 100,
+      height = 20,
+      row = 5,
+      col = 12,
+      style = "minimal",
+    })
+    vim.api.nvim_set_current_buf(buf)
+
+    local cmd = { "python", filepath }
+    vim.fn.termopen(cmd, {
+      on_exit = function(_, code, _)
+        print("✅ Python script exited with code: " .. code)
+        -- vim.api.nvim_win_close(win, true)
+      end,
+    })
+    vim.cmd("startinsert")
+  elseif ft == "c" then
+    vim.cmd("write")
+    local filepath = vim.fn.expand('%:p')
+    local dir = vim.fn.expand('%:p:h')
+    local output = dir .. "/" .. vim.fn.expand('%:t:r')
+    local makeprg = vim.o.makeprg
+    makeprg = makeprg:gsub("%%<", output)
+    makeprg = makeprg:gsub("%%", filepath)
+    local cmd = { "bash", "-c", makeprg .. " && " .. output }
+    local buf = vim.api.nvim_create_buf(false, true)
+    local win = vim.api.nvim_open_win(buf, true, {
+      relative = "editor",
+      width = 100,
+      height = 20,
+      row = 5,
+      col = 12,
+      style = "minimal",
+    })
+    vim.api.nvim_set_current_buf(buf)
+
+    vim.fn.termopen(cmd, {
+      on_exit = function(_, code, _)
+        print("exited with code: " .. code)
+        -- vim.api.nvim_win_close(win, true)
+      end,
+    })
+    vim.cmd("startinsert")
+
+  else
+    print("Unsupported filetype: " .. ft .. " try <leader>mm")
   end
-  vim.fn.termopen(cmd, {
-    on_exit = function(_, code, _)
-      print("Process exited with code: " .. code)
-      -- vim.api.nvim_win_close(win, true)
-    end,
-  })
-  vim.api.nvim_set_current_buf(buf)
-  vim.cmd("startinsert")
 end)
 
 -- make watch

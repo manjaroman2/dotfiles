@@ -58,7 +58,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end
 })
 
-
+-- python
 vim.lsp.config("pyright", {})
 vim.lsp.enable("pyright")
 vim.api.nvim_create_autocmd('BufWritePre', {
@@ -68,7 +68,14 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end
 })
 
-vim.lsp.config("tinymist", {})
+-- typst
+vim.lsp.config("tinymist", {
+  settings = {
+    formatterMode = "typstyle",
+    exportPdf = "onType",
+    semanticTokens = "partial",
+  }
+})
 vim.lsp.enable("tinymist")
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = { "*.typ" },
@@ -76,3 +83,17 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     vim.lsp.buf.format()
   end
 })
+
+-- c/c++
+vim.lsp.config("clangd", {
+  settings = {
+    pattern = { "*.c", "*.cpp"},
+  },
+})
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = { "*.c", "*.cpp" },
+  callback = function(ev)
+    vim.lsp.buf.format()
+  end
+})
+vim.lsp.enable("clangd")

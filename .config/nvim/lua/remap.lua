@@ -251,3 +251,6 @@ vim.keymap.set('v', '<leader>cc', function()
   local count = #joined:gsub("%s", "")
   print("Non-space characters: " .. count)
 end, { silent = true })
+
+
+

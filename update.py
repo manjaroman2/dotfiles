@@ -5,7 +5,12 @@ import subprocess
 from common import base, save
 
 for d in save:
-    shutil.copytree(Path.home() / d, base / d, dirs_exist_ok=True)
+    src = Path.home() / d
+    dst = base / d
+    if src.is_file():
+        shutil.copyfile(src=src, dst=dst)
+    elif src.is_dir():
+        shutil.copytree(src=src, dst=dst, dirs_exist_ok=True)
 
 subprocess.run(["git", "add", "."], check=True)
 cm = datetime.datetime.now().isoformat()

@@ -12,6 +12,7 @@ for d in save:
 
 subprocess.run(["git", "add", "."], check=True)
 cm = datetime.datetime.now().isoformat()
-subprocess.run(["git", "commit", "-am", cm], check=True)
-
+result = subprocess.run(["git", "commit", "-am", cm], capture_output=True, text=True)
+print(result.stdout)
+print(result.stderr)
 subprocess.run(["git", "push"], check=True)

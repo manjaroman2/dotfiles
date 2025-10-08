@@ -2,11 +2,8 @@ import shutil
 from pathlib import Path
 import datetime
 import subprocess
+from common import base, save
 
-base = Path(__file__).parent
-save = [
-".config/nvim",
-]
 for d in save:
     shutil.copytree(Path.home() / d, base / d, dirs_exist_ok=True)
 

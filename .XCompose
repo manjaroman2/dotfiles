@@ -1,5 +1,9 @@
 include "%L"
 
+<Multi_key> <l> <n> : "¬"   U00AC  # NOT
+<Multi_key> <l> <a> : "∧"   U2227  # AND
+<Multi_key> <l> <o> : "∨"   U2228  # OR
+
 <Multi_key> <a> <a> : "ä"   U00E4  # a with diaeresis
 <Multi_key> <o> <o> : "ö"   U00F6  # o with diaeresis
 <Multi_key> <u> <u> : "ü"   U00FC  # u with diaeresis

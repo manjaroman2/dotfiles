@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 import datetime
 import subprocess
-from common import base, save
+from common import base, save, ignore
 
 for d in save:
     src = Path.home() / d
@@ -10,7 +10,7 @@ for d in save:
     if src.is_file():
         shutil.copyfile(src=src, dst=dst)
     elif src.is_dir():
-        shutil.copytree(src=src, dst=dst, dirs_exist_ok=True)
+        shutil.copytree(src=src, dst=dst, dirs_exist_ok=True, ignore=ignore)
 
 subprocess.run(["git", "add", "."], check=True)
 cm = datetime.datetime.now().isoformat()

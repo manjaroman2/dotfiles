@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 import subprocess
 
-from common import base, save
+from common import base, save, ignore
 
 result = subprocess.run(["git", "pull"], capture_output=True, text=True)
 if result.stdout or result.stderr:
@@ -15,4 +15,4 @@ for d in save:
     if src.is_file():
         shutil.copyfile(src=src, dst=dst)
     elif src.is_dir():
-        shutil.copytree(src=src, dst=dst, dirs_exist_ok=True)
+        shutil.copytree(src=src, dst=dst, dirs_exist_ok=True, ignore=ignore)

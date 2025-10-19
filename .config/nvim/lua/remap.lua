@@ -254,3 +254,11 @@ end, { silent = true })
 
 
 
+-- ⌨️ Custom keybinds for folding
+vim.keymap.set("n", "[f", "zc", { desc = "Close fold under cursor" })
+vim.keymap.set("n", "]f", "zo", { desc = "Open fold under cursor" })
+
+-- optional: toggle all folds with <leader>f
+vim.keymap.set("n", "<leader>f", "zA", { desc = "Toggle fold under cursor" })
+
+

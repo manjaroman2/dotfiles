@@ -97,3 +97,17 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end
 })
 vim.lsp.enable("clangd")
+
+-- jinja2
+vim.lsp.config("jinja-lsp", {
+  settings = {
+    pattern = { "*.jinja2" },
+  },
+})
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = { "*.jinja2" },
+  callback = function(ev)
+    vim.lsp.buf.format()
+  end
+})
+vim.lsp.enable("jinja-lsp")

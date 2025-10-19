@@ -34,3 +34,23 @@ vim.opt.showmode = false
 vim.cmd([[autocmd FileType * set formatoptions-=ro]])
 
 vim.cmd("colorscheme tokyonight")
+
+
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldenable = true
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldcolumn = "2"            -- wider fold column
+
+vim.opt.mouse = "a"  -- enable mouse in all modes
+
+-- vim.filetype.add({
+--   extension = {
+--     jinja2 = "htmldjango",  -- or "html" if you prefer plain HTML parsing
+--   },
+--   pattern = {
+--     [".*%.html%.jinja2"] = "htmldjango",  -- matches *.html.jinja2
+--     [".*%.jinja"] = "htmldjango",
+--   },
+-- })

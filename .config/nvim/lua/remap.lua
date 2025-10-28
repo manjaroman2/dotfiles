@@ -10,8 +10,14 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 -- search and replace under cursor
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
--- netrw explorer
-vim.keymap.set("n", "<leader>e", ":Explore<CR>")
+-- nvim-tree explorer
+vim.keymap.set("n", "<leader>e", function()
+    local nvim_tree_api = require('nvim-tree.api')
+    nvim_tree_api.tree.toggle({ focus = true })
+    local win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_width(win, vim.o.columns)
+    vim.api.nvim_win_set_height(win, vim.o.lines)
+end, { noremap = true, silent = true })
 
 -- all deletes blackhole
 vim.keymap.set({ "n", "x" }, "d", '"_d', { noremap = true })
@@ -80,6 +86,7 @@ vim.keymap.set("n", "<leader>mr", function()
       row = 5,
       col = 12,
       style = "minimal",
+      border = { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" },
     })
     local cmd = { "zig", "build", "--summary", "all", "run" }
     if vim.g.zig_make_args and vim.g.zig_make_args ~= "" then
@@ -117,6 +124,7 @@ vim.keymap.set("n", "<leader>mr", function()
       row = 5,
       col = 12,
       style = "minimal",
+      border = { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" },
     })
     vim.api.nvim_set_current_buf(buf)
 
@@ -132,7 +140,8 @@ vim.keymap.set("n", "<leader>mr", function()
     vim.cmd("write")
     local filepath = vim.fn.expand('%:p')
     local dir = vim.fn.expand('%:p:h')
-    local output = dir .. "/" .. vim.fn.expand('%:t:r')
+    -- local output = dir .. "/" .. vim.fn.expand('%:t:r')
+    local output = "/tmp/" .. vim.fn.expand('%:t:r')
     local makeprg = vim.o.makeprg
     makeprg = makeprg:gsub("%%<", output)
     makeprg = makeprg:gsub("%%", filepath)
@@ -145,6 +154,7 @@ vim.keymap.set("n", "<leader>mr", function()
       row = 5,
       col = 12,
       style = "minimal",
+      border = { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" },
     })
     vim.api.nvim_set_current_buf(buf)
 

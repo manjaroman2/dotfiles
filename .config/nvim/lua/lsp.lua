@@ -83,6 +83,18 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     vim.lsp.buf.format()
   end
 })
+vim.api.nvim_create_autocmd('BufWritePost', {
+  pattern = { "*.typ" },
+  callback = function(ev)
+    local input = ev.file
+    local base = vim.fn.fnamemodify(input, ":r") -- without extension
+    local pdf_default = base .. ".pdf"
+    local pdf_target = base .. ".typ.pdf"
+    if vim.fn.filereadable(pdf_default) == 1 then
+      vim.fn.rename(pdf_default, pdf_target)
+    end
+  end
+})
 
 -- c/c++
 vim.lsp.config("clangd", {

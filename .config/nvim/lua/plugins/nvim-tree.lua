@@ -9,13 +9,20 @@ return {
       if not node then return end
       local path = node.absolute_path
 
+      local cmd
       if vim.fn.has("macunix") == 1 then
-        vim.fn.system({"open", path})
+        cmd = { "open", path }
       elseif vim.fn.has("unix") == 1 then
-        vim.fn.system({"xdg-open", path})
+        cmd = { "xdg-open", path }
       elseif vim.fn.has("win32") == 1 then
-        vim.fn.system({"start", path})
+        cmd = { "start", path }
+      else
+        vim.notify("Unsupported OS", vim.log.levels.ERROR)
+        return
       end
+
+      -- Run asynchronously and detach immediately
+      vim.system(cmd, { detach = true })
     end
 
     require('nvim-tree').setup({

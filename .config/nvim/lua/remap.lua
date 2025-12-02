@@ -39,6 +39,28 @@ vim.keymap.set("n", "<leader>bd", ":bd<CR>")
 
 -- toggle quickfix list
 vim.keymap.set("n", "<leader>q", ":cwindow<CR>")
+-- quickfix always on the right
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function()
+    if vim.fn.getwininfo(vim.fn.win_getid())[1].loclist ~= 1 then
+      vim.cmd("wincmd L")
+      vim.cmd("vertical resize 60")
+    end
+  end,
+})
+-- quickfix response to resize
+vim.api.nvim_create_autocmd("VimResized", {
+  callback = function()
+    for _, win in ipairs(vim.fn.getwininfo()) do
+      if win.quickfix == 1 and win.loclist ~= 1 then
+        vim.api.nvim_set_current_win(win.winid)
+        vim.cmd("vertical resize 60")
+      end
+    end
+  end,
+})
+
 
 -- make
 vim.keymap.set("n", "<leader>mm",

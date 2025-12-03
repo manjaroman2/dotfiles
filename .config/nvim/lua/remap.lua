@@ -12,11 +12,11 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 -- nvim-tree explorer
 vim.keymap.set("n", "<leader>e", function()
-    local nvim_tree_api = require('nvim-tree.api')
-    nvim_tree_api.tree.toggle({ focus = true })
-    local win = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_width(win, vim.o.columns)
-    vim.api.nvim_win_set_height(win, vim.o.lines)
+  local nvim_tree_api = require('nvim-tree.api')
+  nvim_tree_api.tree.toggle({ focus = true })
+  local win = vim.api.nvim_get_current_win()
+  vim.api.nvim_win_set_width(win, vim.o.columns)
+  vim.api.nvim_win_set_height(win, vim.o.lines)
 end, { noremap = true, silent = true })
 
 -- all deletes blackhole
@@ -89,11 +89,19 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 -- c: default options if no Makefile is present
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = "c",
-    callback = function()
-        vim.opt.makeprg = "gcc % -o %<"
-        vim.opt.errorformat = "%f:%l:%c: %m"
-    end,
+  pattern = "c",
+  callback = function()
+    vim.opt.makeprg = "gcc % -o %<"
+    vim.opt.errorformat = "%f:%l:%c: %m"
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "cpp",
+  callback = function()
+    vim.opt.makeprg = "g++ % -o %<"
+    vim.opt.errorformat = "%f:%l:%c: %m"
+  end,
 })
 
 -- make run
@@ -108,7 +116,7 @@ vim.keymap.set("n", "<leader>mr", function()
       row = 5,
       col = 12,
       style = "minimal",
-      border = { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" },
+      border = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
     })
     local cmd = { "zig", "build", "--summary", "all", "run" }
     if vim.g.zig_make_args and vim.g.zig_make_args ~= "" then
@@ -146,7 +154,7 @@ vim.keymap.set("n", "<leader>mr", function()
       row = 5,
       col = 12,
       style = "minimal",
-      border = { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" },
+      border = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
     })
     vim.api.nvim_set_current_buf(buf)
 
@@ -158,7 +166,7 @@ vim.keymap.set("n", "<leader>mr", function()
       end,
     })
     vim.cmd("startinsert")
-  elseif ft == "c" then
+  elseif ft == "c" or ft == "cpp" then
     vim.cmd("write")
     local filepath = vim.fn.expand('%:p')
     local dir = vim.fn.expand('%:p:h')
@@ -176,7 +184,7 @@ vim.keymap.set("n", "<leader>mr", function()
       row = 5,
       col = 12,
       style = "minimal",
-      border = { "╔", "═" ,"╗", "║", "╝", "═", "╚", "║" },
+      border = { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
     })
     vim.api.nvim_set_current_buf(buf)
 
@@ -187,7 +195,6 @@ vim.keymap.set("n", "<leader>mr", function()
       end,
     })
     vim.cmd("startinsert")
-
   else
     print("Unsupported filetype: " .. ft .. " try <leader>mm")
   end
@@ -292,5 +299,3 @@ vim.keymap.set("n", "]f", "zo", { desc = "Open fold under cursor" })
 
 -- optional: toggle all folds with <leader>f
 vim.keymap.set("n", "<leader>f", "zA", { desc = "Toggle fold under cursor" })
-
-

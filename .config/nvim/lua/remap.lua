@@ -93,6 +93,10 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.opt.makeprg = "gcc % -o %<"
     vim.opt.errorformat = "%f:%l:%c: %m"
+    vim.bo.cindent = true
+    vim.bo.shiftwidth = 4
+    vim.bo.tabstop = 4
+    vim.bo.expandtab = true
   end,
 })
 
@@ -101,6 +105,10 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.opt.makeprg = "g++ % -o %<"
     vim.opt.errorformat = "%f:%l:%c: %m"
+    vim.bo.cindent = true
+    vim.bo.shiftwidth = 4
+    vim.bo.tabstop = 4
+    vim.bo.expandtab = true
   end,
 })
 

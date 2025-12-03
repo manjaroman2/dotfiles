@@ -1,3 +1,13 @@
+-- snippets
+vim.snippet.expand = function(snippet)
+  local luasnip = require('luasnip')
+  luasnip.lsp_expand(snippet)
+end
+
+vim.keymap.set("i", "<C-k>", function()
+  require("luasnip").expand_or_jump()
+end)
+
 vim.g.zig_fmt_parse_errors = 0
 vim.g.zig_fmt_autosave = 0
 vim.opt.pummaxwidth = 80
@@ -123,3 +133,6 @@ vim.lsp.enable("clangd")
 --     vim.lsp.buf.format()
 --   end
 -- })
+
+
+

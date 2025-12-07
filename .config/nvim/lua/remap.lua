@@ -80,7 +80,7 @@ vim.keymap.set("n", "<leader>q", ":cwindow<CR>")
 -- Folding keybinds
 vim.keymap.set("n", "[f", "zc", { desc = "Close fold under cursor" })
 vim.keymap.set("n", "]f", "zo", { desc = "Open fold under cursor" })
-vim.keymap.set("n", "<leader>f", "zA", { desc = "Toggle fold under cursor" })
+-- vim.keymap.set("n", "<leader>f", "zA", { desc = "Toggle fold under cursor" })
 
 -- Character count in visual selection
 vim.keymap.set('v', '<leader>cc', function()
@@ -281,34 +281,30 @@ vim.keymap.set("n", "<leader>mr", function()
   
   -- ===== C/C++ =====
   elseif ft == "c" or ft == "cpp" then
-    vim.cmd("write")
-    local filepath = vim.fn.expand('%:p')
-    local filename = vim.fn.expand('%:t:r')
-    local cmake_dir = M.find_file_upwards("CMakeLists.txt")
-    
-    local cmd
-    if cmake_dir then
-      -- CMake build
-      cmd = {
+      vim.cmd("write")
+
+      local cmake_dir = M.find_file_upwards("CMakeLists.txt")
+      if not cmake_dir then
+        vim.notify("No CMakeLists.txt found", vim.log.levels.ERROR)
+        return
+      end
+
+      local cmd = {
         "bash",
         "-c",
         "cd " .. cmake_dir .. " && " ..
-        "([ -d build ] || (mkdir -p build && cd build && cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON)) && " ..
-        "cmake --build build/ --parallel && " ..
-        "./build/" .. filename
+        "([ -d build ] || (mkdir -p build && cmake -S . -B build)) && " ..
+        "cmake --build build --target run --parallel"
       }
-    else
-      local output = "/tmp/" .. filename
-      local compile_cmd = "g++ " .. filepath .. " -o " .. output .. " && " .. output
-      cmd = { "bash", "-c", compile_cmd }
-    end
-    
-    M.create_float_term(cmd)
-  
+
+      M.create_float_term(cmd)
+
+
   else
     print("Unsupported filetype: " .. ft .. " - try <leader>mm")
   end
 end)
+
 
 -- ============================================================================
 -- MAKE WATCH (<leader>mw) - ZIG ONLY

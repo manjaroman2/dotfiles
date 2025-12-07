@@ -113,7 +113,7 @@ vim.lsp.config("clangd", {
   },
 })
 vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = { "*.c", "*.cpp" },
+  pattern = { "*.c", "*.cpp", "*.hpp", "*.h" },
   callback = function(ev)
     vim.lsp.buf.format()
   end

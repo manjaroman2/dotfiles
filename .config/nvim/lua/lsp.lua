@@ -44,6 +44,51 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
+-- Better quickfix navigation
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function(ev)
+    local opts = { buffer = ev.buf, noremap = true, silent = true }
+    vim.keymap.set("n", "j", function()
+      local qf_winid = vim.fn.win_getid()  -- Save quickfix window ID
+      -- vim.cmd("normal! j")
+      -- vim.cmd(".cc")
+      pcall(vim.cmd, "cnext")  -- Go to next quickfix item
+      vim.fn.win_gotoid(qf_winid)  -- Return to saved quickfix window
+    end, opts)
+    vim.keymap.set("n", "k", function()
+      local qf_winid = vim.fn.win_getid()  -- Save quickfix window ID
+      -- vim.cmd("normal! k")
+      -- vim.cmd(".cc")      
+      pcall(vim.cmd, "cprevious")  -- Go to next quickfix item
+      vim.fn.win_gotoid(qf_winid)  -- Return to saved quickfix window
+    end, opts)
+  end,
+})
+
+-- Also add BufEnter for when quickfix is re-opened
+-- vim.api.nvim_create_autocmd("BufEnter", {
+--   callback = function(ev)
+--     if vim.bo[ev.buf].buftype == "quickfix" then
+--       local opts = { buffer = ev.buf, noremap = true, silent = true }
+--       vim.keymap.set("n", "j", function()
+--         print("j mapping executed bufenter")
+--         vim.cmd("normal! j")
+--         vim.cmd(".cc")
+--         vim.cmd("wincmd p")
+--       end, opts)
+--       vim.keymap.set("n", "k", function()
+--         print("k mapping executed bufenter")
+--         vim.cmd("normal! k")
+--         vim.cmd(".cc")
+--         vim.cmd("wincmd p")
+--       end, opts)
+--     end
+--   end,
+-- })
+
+-- LSP config --
+
 vim.lsp.config("zls", {
   settings = {
     zls = {

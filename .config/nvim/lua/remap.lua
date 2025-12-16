@@ -75,7 +75,14 @@ vim.keymap.set({ "n", "x" }, "d", '"_d', { noremap = true })
 vim.keymap.set("n", "<leader>bd", ":bd<CR>")
 
 -- Toggle quickfix list
-vim.keymap.set("n", "<leader>q", ":cwindow<CR>")
+-- vim.keymap.set("n", "<leader>q", ":cwindow<CR>")
+vim.keymap.set("n", "<leader>q", function()
+  if vim.fn.getqflist({winid = 0}).winid ~= 0 then
+    vim.cmd("cclose")
+  else
+    vim.cmd("copen")
+  end
+end)
 
 -- Folding keybinds
 vim.keymap.set("n", "[f", "zc", { desc = "Close fold under cursor" })
@@ -179,15 +186,15 @@ vim.keymap.set("n", "<leader>mm", function()
     local cmake_dir = M.find_file_upwards("CMakeLists.txt")
     
     if cmake_dir then
-      vim.opt.makeprg = "cmake --build " .. cmake_dir .. "/build/ --parallel"
+      vim.opt.makeprg = "cmake --build build/Debug --parallel"
     end
   end
   
-  -- vim.cmd("make")
+  vim.cmd("cclose")  -- Close first
   vim.cmd("silent make")
   vim.cmd("redraw!")
   if #vim.fn.getqflist() > 0 then
-    vim.cmd("copen")
+    vim.cmd("copen")  -- Then reopen
   end
 end, { silent = true })
 
@@ -294,7 +301,7 @@ vim.keymap.set("n", "<leader>mr", function()
         "-c",
         "cd " .. cmake_dir .. " && " ..
         "([ -d build ] || (mkdir -p build && cmake -S . -B build)) && " ..
-        "cmake --build build --target run --parallel"
+        "cmake --build build/Release --target run --parallel"
       }
 
       M.create_float_term(cmd)

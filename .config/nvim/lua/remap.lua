@@ -190,7 +190,7 @@ vim.keymap.set("n", "<leader>mm", function()
     end
   end
   
-  vim.cmd("cclose")  -- Close first
+  vim.cmd("cclose")
   vim.cmd("silent make")
   vim.cmd("redraw!")
   if #vim.fn.getqflist() > 0 then
@@ -293,6 +293,13 @@ vim.keymap.set("n", "<leader>mr", function()
       local cmake_dir = M.find_file_upwards("CMakeLists.txt")
       if not cmake_dir then
         vim.notify("No CMakeLists.txt found", vim.log.levels.ERROR)
+        local cmd = {
+          "bash",
+          "-c",
+          "./main",
+        }
+        vim.cmd("make")
+        M.create_float_term(cmd)
         return
       end
 

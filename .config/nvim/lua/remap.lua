@@ -306,9 +306,7 @@ vim.keymap.set("n", "<leader>mr", function()
       local cmd = {
         "bash",
         "-c",
-        "cd " .. cmake_dir .. " && " ..
-        "([ -d build ] || (mkdir -p build && cmake -S . -B build)) && " ..
-        "cmake --build build/Release --target run --parallel"
+        "cmake --build build/Debug --target run --parallel"
       }
 
       M.create_float_term(cmd)

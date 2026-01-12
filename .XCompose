@@ -9,7 +9,9 @@ include "%L"
 <Multi_key> <o> <o> : "ö"   U00F6  # o with diaeresis
 <Multi_key> <u> <u> : "ü"   U00FC  # u with diaeresis
 <Multi_key> <a> <A> : "Ä"   U00C4  # A with diaeresis
+<Multi_key> <A> <A> : "Ä"   U00C4  # A with diaeresis
 <Multi_key> <o> <O> : "Ö"   U00D6  # O with diaeresis
+<Multi_key> <O> <O> : "Ö"   U00D6  # O with diaeresis
 <Multi_key> <u> <U> : "Ü"   U00DC  # U with diaeresis
 <Multi_key> <U> <U> : "Ü"   U00DC  # U with diaeresis
 <Multi_key> <s> <s> : "ß"   U00DF  # sharp s (Eszett)

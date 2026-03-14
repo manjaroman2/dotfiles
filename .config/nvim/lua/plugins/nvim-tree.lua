@@ -68,6 +68,9 @@ return {
     -- end
 
     require('nvim-tree').setup({
+      git = {
+          ignore = false,
+      },
       open_on_tab = true,
       hijack_netrw = true,
       update_focused_file = { enable = false },

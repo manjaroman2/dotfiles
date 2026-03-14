@@ -16,6 +16,13 @@ vim.keymap.set("i", "<CR>", function()
   return vim.fn.pumvisible() == 1 and "<C-y>" or "<CR>"
 end, { expr = true, noremap = true })
 
+local function lsp_rename_and_save()
+  vim.lsp.buf.rename()
+  vim.cmd("wall") -- write all modified buffers
+end
+
+vim.keymap.set("n", "gn", lsp_rename_and_save)
+
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('my.lsp', {}),
   callback = function(args)
@@ -30,7 +37,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = args.buf })
     end
     if client:supports_method('textDocument/rename') then
-      vim.keymap.set("n", "gn", vim.lsp.buf.rename, { buffer = args.buf })
+      vim.keymap.set("n", "gn", lsp_rename_and_save, { buffer = args.buf })
     end
     -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
     if client:supports_method('textDocument/completion') then
@@ -164,6 +171,19 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end
 })
 vim.lsp.enable("clangd")
+
+-- go
+vim.lsp.config("gopls", {
+  -- settings = {
+  -- }
+})
+vim.lsp.enable("gopls")
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = { "*.go" },
+  callback = function(ev)
+    vim.lsp.buf.format()
+  end
+})
 
 -- jinja2
 -- vim.lsp.config("jinja_lsp", {

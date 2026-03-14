@@ -293,12 +293,13 @@ vim.keymap.set("n", "<leader>mr", function()
       local cmake_dir = M.find_file_upwards("CMakeLists.txt")
       if not cmake_dir then
         vim.notify("No CMakeLists.txt found", vim.log.levels.ERROR)
+        vim.cmd("make")
+        local exe = vim.fn.expand("%<")
         local cmd = {
           "bash",
           "-c",
-          "./main",
+          "./" .. exe,
         }
-        vim.cmd("make")
         M.create_float_term(cmd)
         return
       end
@@ -311,7 +312,10 @@ vim.keymap.set("n", "<leader>mr", function()
 
       M.create_float_term(cmd)
 
-
+  -- ===== GO =====
+  elseif ft == "go" then
+    local cmd = { "go", "run", "." }
+    M.create_float_term(cmd)
   else
     print("Unsupported filetype: " .. ft .. " - try <leader>mm")
   end

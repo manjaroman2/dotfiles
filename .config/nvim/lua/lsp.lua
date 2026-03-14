@@ -121,14 +121,20 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 })
 
 -- python
-vim.lsp.config("pyright", {})
-vim.lsp.enable("pyright")
-vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = { "*.py" },
-  callback = function(ev)
-    vim.lsp.buf.format()
-  end
+vim.lsp.config('ruff', {
+  init_options = {
+    settings = {
+      showSyntaxErrors = true,
+    }
+  }
 })
+vim.lsp.enable('ruff')
+vim.lsp.config("zuban", {
+  cmd = { vim.fn.expand("~/.local/share/zuban-env/bin/zuban"), "server" },
+  filetypes = { "python" },
+  root_markers = { "pyproject.toml", "setup.py", "setup.cfg", ".git" },
+})
+vim.lsp.enable("zuban")
 
 -- typst
 vim.lsp.config("tinymist", {

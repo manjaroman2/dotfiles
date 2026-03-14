@@ -1,0 +1,3 @@
+[tool.zuban]
+mode = "mypy"
+strict = true

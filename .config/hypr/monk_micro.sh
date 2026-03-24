@@ -8,7 +8,7 @@ CUR_X=${CUR_X// /}
 CUR_Y=${CURRENT##*,}
 CUR_Y=${CUR_Y// /}
 
-CUR_YD_X=$(( CUR_X * 111199 / 10000 ))
+CUR_YD_X=$(( CUR_X * 111159 / 10000 ))
 CUR_YD_Y=$(( CUR_Y * 111199 / 10000 ))
 
 evtest --grab /dev/input/event2 > /dev/null 2>&1 &
@@ -16,10 +16,10 @@ GRAB_PID=$!
 ~/dev/ydotool/build/ydotool --chain \
   mousemove --absolute -- "$TARGET_X" "$TARGET_Y" \
   key -d 0 29:1 \
-  click -D 0 0xC0
-kill $GRAB_PID
- ~/dev/ydotool/build/ydotool --chain \
+  click -D 0 0xC0 \
   key -d 0 29:0 \
   mousemove --absolute -- "$CUR_YD_X" "$CUR_YD_Y" \
   key -d 0 16:1 16:0 \
   click -D 0 0xC1
+kill $GRAB_PID
+

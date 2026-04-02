@@ -26,6 +26,45 @@ local function normalize_path(path)
   return vim.fs.normalize(path)
 end
 
+local function normalize_dir(path)
+  if type(path) ~= "string" or path == "" then
+    return nil
+  end
+
+  return normalize_path(vim.fn.fnamemodify(path, ":p"))
+end
+
+local function validate_project_dir(path)
+  local project_dir = normalize_dir(path)
+  if not project_dir then
+    return nil
+  end
+
+  if vim.fn.isdirectory(project_dir) ~= 1 then
+    vim.notify("Project directory does not exist: " .. project_dir, vim.log.levels.ERROR)
+    return nil
+  end
+
+  return project_dir
+end
+
+local function prompt_for_project_dir(default_dir)
+  vim.fn.inputsave()
+  local ok, input = pcall(vim.fn.input, {
+    prompt = "Project dir (edit if needed): ",
+    default = default_dir,
+    completion = "dir",
+    cancelreturn = "",
+  })
+  vim.fn.inputrestore()
+
+  if not ok or input == "" then
+    return nil
+  end
+
+  return validate_project_dir(input)
+end
+
 function M.find_root(start_dir)
   local dir = start_dir or vim.fn.expand("%:p:h")
   if dir == "" then
@@ -235,12 +274,30 @@ local function reapply_root(root)
   end
 end
 
-function M.edit_makeprg()
+function M.edit_makeprg(project_dir)
   local current = vim.api.nvim_buf_get_name(0)
   local start_dir = current ~= "" and vim.fn.fnamemodify(current, ":p:h") or vim.fn.getcwd()
-  local root = M.find_root(start_dir) or normalize_path(start_dir)
-  local config_dir = root .. "/.nvim"
+  local assumed_root = M.find_root(start_dir) or normalize_path(start_dir)
+  local root = assumed_root
+
+  if project_dir ~= nil then
+    root = validate_project_dir(project_dir)
+    if not root then
+      return
+    end
+  end
+
   local path = M.makeprg_path(root)
+
+  if vim.fn.filereadable(path) ~= 1 and project_dir == nil then
+    root = prompt_for_project_dir(assumed_root)
+    if not root then
+      return
+    end
+    path = M.makeprg_path(root)
+  end
+
+  local config_dir = root .. "/.nvim"
 
   if vim.fn.isdirectory(config_dir) ~= 1 then
     vim.fn.mkdir(config_dir, "p")
@@ -272,10 +329,13 @@ function M.setup()
     end,
   })
 
-  vim.api.nvim_create_user_command("ProjectMakeprg", function()
-    M.edit_makeprg()
+  vim.api.nvim_create_user_command("ProjectMakeprg", function(opts)
+    local project_dir = opts.args ~= "" and opts.args or nil
+    M.edit_makeprg(project_dir)
   end, {
     desc = "Edit the current project's makeprg config",
+    nargs = "?",
+    complete = "dir",
   })
 end
 

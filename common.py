@@ -12,4 +12,4 @@ save = [
     ".config/hypr",
     ".XCompose",
 ]
-ignore = ignore_patterns(".git")
+ignore = ignore_patterns(".git", "*.log")

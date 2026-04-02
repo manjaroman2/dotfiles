@@ -19,12 +19,53 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.config/nvim/undodir"
 vim.opt.undofile = true
+
+local function make_osc52_clipboard()
+  local osc52 = require('vim.ui.clipboard.osc52')
+  local copy_plus = osc52.copy('+')
+  local warned = false
+  local cache = { {}, 'v' }
+
+  local function copy(lines, regtype)
+    cache = { vim.deepcopy(lines), regtype }
+    copy_plus(lines, regtype)
+  end
+
+  local function paste()
+    if #cache[1] == 0 and not warned then
+      warned = true
+      vim.notify(
+        'Clipboard reads over OSC 52 are disabled here; use terminal paste instead.',
+        vim.log.levels.INFO
+      )
+    end
+
+    return { vim.deepcopy(cache[1]), cache[2] }
+  end
+
+  return {
+    name = 'OSC 52',
+    copy = {
+      ['+'] = copy,
+      ['*'] = copy,
+    },
+    paste = {
+      ['+'] = paste,
+      ['*'] = paste,
+    },
+  }
+end
+
 local is_ssh = vim.env.SSH_TTY or vim.env.SSH_CONNECTION or vim.env.SSH_CLIENT
+local in_tmux = vim.env.TMUX
 local has_graphical_clipboard = vim.env.WAYLAND_DISPLAY or vim.env.DISPLAY
 
--- Remote Neovim cannot reach the local clipboard directly, so force OSC 52.
-if is_ssh or not has_graphical_clipboard then
-  vim.g.clipboard = 'osc52'
+-- Prefer tmux's clipboard bridge inside tmux, otherwise fall back to OSC 52
+-- for remote/headless sessions where direct clipboard tools are unavailable.
+if in_tmux and (is_ssh or not has_graphical_clipboard) then
+  vim.g.clipboard = 'tmux'
+elseif is_ssh or not has_graphical_clipboard then
+  vim.g.clipboard = make_osc52_clipboard()
 end
 
 vim.opt.clipboard = 'unnamedplus'

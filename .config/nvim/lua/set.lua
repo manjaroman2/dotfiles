@@ -19,24 +19,15 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.config/nvim/undodir"
 vim.opt.undofile = true
-if os.getenv('WAYLAND_DISPLAY') then
-  vim.opt.clipboard = 'unnamedplus'
-elseif os.getenv('DISPLAY') then
-  vim.opt.clipboard = 'unnamedplus'
-else
-  vim.g.clipboard = {
-    name = 'OSC 52',
-    copy = {
-      ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
-      ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
-    },
-    paste = {
-      ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
-      ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
-    },
-  }
-  vim.opt.clipboard = 'unnamedplus'
+local is_ssh = vim.env.SSH_TTY or vim.env.SSH_CONNECTION or vim.env.SSH_CLIENT
+local has_graphical_clipboard = vim.env.WAYLAND_DISPLAY or vim.env.DISPLAY
+
+-- Remote Neovim cannot reach the local clipboard directly, so force OSC 52.
+if is_ssh or not has_graphical_clipboard then
+  vim.g.clipboard = 'osc52'
 end
+
+vim.opt.clipboard = 'unnamedplus'
 
 vim.opt.hlsearch = true
 vim.opt.incsearch = true

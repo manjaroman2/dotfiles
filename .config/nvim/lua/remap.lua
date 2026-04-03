@@ -363,6 +363,7 @@ map("n", "<leader>f", telescope_picker("find_files"), { desc = "Find files" })
 map("n", "<leader>g", telescope_picker("live_grep"), { desc = "Live grep" })
 map("n", "<leader>bb", telescope_picker("buffers"), { desc = "Find buffers" })
 map("n", "<leader>bd", "<cmd>bd<CR>", { desc = "Delete buffer" })
+map("n", "<leader>bj", "<cmd>b#<CR>", { desc = "Jump to last buffer" })
 map("n", "<leader>t", telescope_picker("planets"), { desc = "Browse planets" })
 
 map({ "n", "x", "o" }, "s", flash_action("jump"), { desc = "Flash" })
